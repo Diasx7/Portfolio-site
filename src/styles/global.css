@@ -1,0 +1,67 @@
+/* Variáveis do tema escuro */
+:root {
+  --fundo: #050d16;
+  --card: #0a1a2c;
+  --card-destaque: #0f2440;
+  --titulo: #f0e9d6;
+  --texto: #c4d2e0;
+  --ciano: #3ec6e0;
+  --borda: rgba(62, 198, 224, 0.14);
+  --fonte-titulo: 'Space Grotesk', sans-serif;
+  --fonte-texto: 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--fonte-texto);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--fonte-titulo);
+  color: var(--titulo);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--ciano);
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Com prefers-reduced-motion, corta todas as animações e transições */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

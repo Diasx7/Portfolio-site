@@ -1,0 +1,238 @@
+/* Admin: visual simples, sem animações */
+
+.admin-carregando {
+  padding: 40px;
+}
+
+/* ---------- Login ---------- */
+
+.login-fundo {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-caixa {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-erro {
+  color: #e08a8a;
+  font-size: 0.9rem;
+}
+
+/* ---------- Estrutura ---------- */
+
+.admin {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.admin-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-topo h1 {
+  font-size: 1.4rem;
+}
+
+.admin-topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--borda);
+  padding-bottom: 12px;
+}
+
+.admin-abas button {
+  background: transparent;
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.admin-abas button.ativa {
+  background: var(--ciano);
+  border-color: var(--ciano);
+  color: var(--fundo);
+  font-weight: 600;
+}
+
+/* ---------- Formulários ---------- */
+
+.admin-form {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-form h2 {
+  font-size: 1.1rem;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  color: var(--texto);
+  padding: 10px 12px;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus {
+  outline: 2px solid var(--ciano);
+  outline-offset: -1px;
+}
+
+.admin-form-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.admin-check {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+}
+
+.admin-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ciano);
+}
+
+.admin-form-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-form-acoes button,
+.login-caixa button {
+  background: var(--ciano);
+  border: none;
+  color: var(--fundo);
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.admin-form-acoes button[type='button'] {
+  background: transparent;
+  border: 1px solid var(--borda);
+  color: var(--texto);
+}
+
+.admin-ok {
+  color: var(--ciano);
+  font-weight: 600;
+}
+
+/* ---------- Listas ---------- */
+
+.admin-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-lista li {
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-lista li.item-oculto {
+  opacity: 0.5;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-info strong {
+  color: var(--titulo);
+}
+
+.item-meta {
+  font-size: 0.82rem;
+  opacity: 0.75;
+}
+
+.item-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.item-acoes button {
+  background: transparent;
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.item-acoes button:hover:not(:disabled) {
+  border-color: var(--ciano);
+  color: var(--ciano);
+}
+
+.item-acoes button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.item-acoes button.perigo:hover {
+  border-color: #e08a8a;
+  color: #e08a8a;
+}
