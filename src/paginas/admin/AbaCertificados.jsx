@@ -9,7 +9,7 @@ export default function AbaCertificados() {
   const [editandoId, setEditandoId] = useState(null)
 
   async function carregar() {
-    const { data } = await supabase.from('certificados').select('*').order('ano', { ascending: false })
+    const { data } = await supabase.from('portfolio_certificados').select('*').order('ano', { ascending: false })
     setCertificados(data || [])
   }
 
@@ -36,9 +36,9 @@ export default function AbaCertificados() {
       link: form.link || null,
     }
     if (editandoId) {
-      await supabase.from('certificados').update(dados).eq('id', editandoId)
+      await supabase.from('portfolio_certificados').update(dados).eq('id', editandoId)
     } else {
-      await supabase.from('certificados').insert(dados)
+      await supabase.from('portfolio_certificados').insert(dados)
     }
     cancelar()
     carregar()
@@ -46,7 +46,7 @@ export default function AbaCertificados() {
 
   async function excluir(id) {
     if (!confirm('Excluir esse certificado?')) return
-    await supabase.from('certificados').delete().eq('id', id)
+    await supabase.from('portfolio_certificados').delete().eq('id', id)
     carregar()
   }
 

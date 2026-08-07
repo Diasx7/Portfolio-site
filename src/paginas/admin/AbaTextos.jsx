@@ -17,7 +17,7 @@ export default function AbaTextos() {
   const [salvou, setSalvou] = useState(false)
 
   useEffect(() => {
-    supabase.from('textos_site').select('*').then(({ data }) => {
+    supabase.from('portfolio_textos_site').select('*').then(({ data }) => {
       const mapa = {}
       for (const linha of data || []) mapa[linha.chave] = linha.valor
       setTextos(mapa)
@@ -29,7 +29,7 @@ export default function AbaTextos() {
     setSalvando(true)
     // Upsert de todos os campos de uma vez
     const linhas = CAMPOS.map(({ chave }) => ({ chave, valor: textos[chave] || '' }))
-    await supabase.from('textos_site').upsert(linhas)
+    await supabase.from('portfolio_textos_site').upsert(linhas)
     setSalvando(false)
     setSalvou(true)
     setTimeout(() => setSalvou(false), 2500)

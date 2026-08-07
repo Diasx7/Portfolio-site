@@ -19,7 +19,7 @@ export default function AbaProjetos() {
   const [salvando, setSalvando] = useState(false)
 
   async function carregar() {
-    const { data } = await supabase.from('projetos').select('*').order('ordem')
+    const { data } = await supabase.from('portfolio_projetos').select('*').order('ordem')
     setProjetos(data || [])
   }
 
@@ -56,14 +56,14 @@ export default function AbaProjetos() {
 
     // Só um projeto pode ser destaque por vez
     if (dados.destaque) {
-      await supabase.from('projetos').update({ destaque: false }).eq('destaque', true)
+      await supabase.from('portfolio_projetos').update({ destaque: false }).eq('destaque', true)
     }
 
     if (editandoId) {
-      await supabase.from('projetos').update(dados).eq('id', editandoId)
+      await supabase.from('portfolio_projetos').update(dados).eq('id', editandoId)
     } else {
       dados.ordem = projetos.length
-      await supabase.from('projetos').insert(dados)
+      await supabase.from('portfolio_projetos').insert(dados)
     }
 
     setSalvando(false)
@@ -73,12 +73,12 @@ export default function AbaProjetos() {
 
   async function excluir(id) {
     if (!confirm('Excluir esse projeto?')) return
-    await supabase.from('projetos').delete().eq('id', id)
+    await supabase.from('portfolio_projetos').delete().eq('id', id)
     carregar()
   }
 
   async function alternar(projeto, campo) {
-    await supabase.from('projetos').update({ [campo]: !projeto[campo] }).eq('id', projeto.id)
+    await supabase.from('portfolio_projetos').update({ [campo]: !projeto[campo] }).eq('id', projeto.id)
     carregar()
   }
 
@@ -89,8 +89,8 @@ export default function AbaProjetos() {
     const a = projetos[indice]
     const b = projetos[vizinho]
     await Promise.all([
-      supabase.from('projetos').update({ ordem: b.ordem }).eq('id', a.id),
-      supabase.from('projetos').update({ ordem: a.ordem }).eq('id', b.id),
+      supabase.from('portfolio_projetos').update({ ordem: b.ordem }).eq('id', a.id),
+      supabase.from('portfolio_projetos').update({ ordem: a.ordem }).eq('id', b.id),
     ])
     carregar()
   }

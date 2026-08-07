@@ -8,7 +8,7 @@ export default function AbaTecnologias() {
   const [editandoId, setEditandoId] = useState(null)
 
   async function carregar() {
-    const { data } = await supabase.from('tecnologias').select('*').order('ordem')
+    const { data } = await supabase.from('portfolio_tecnologias').select('*').order('ordem')
     setTecnologias(data || [])
   }
 
@@ -31,9 +31,9 @@ export default function AbaTecnologias() {
   async function salvar(e) {
     e.preventDefault()
     if (editandoId) {
-      await supabase.from('tecnologias').update({ nome, grupo }).eq('id', editandoId)
+      await supabase.from('portfolio_tecnologias').update({ nome, grupo }).eq('id', editandoId)
     } else {
-      await supabase.from('tecnologias').insert({ nome, grupo, ordem: tecnologias.length })
+      await supabase.from('portfolio_tecnologias').insert({ nome, grupo, ordem: tecnologias.length })
     }
     cancelar()
     carregar()
@@ -41,7 +41,7 @@ export default function AbaTecnologias() {
 
   async function excluir(id) {
     if (!confirm('Excluir essa tecnologia?')) return
-    await supabase.from('tecnologias').delete().eq('id', id)
+    await supabase.from('portfolio_tecnologias').delete().eq('id', id)
     carregar()
   }
 
@@ -51,8 +51,8 @@ export default function AbaTecnologias() {
     const a = tecnologias[indice]
     const b = tecnologias[vizinho]
     await Promise.all([
-      supabase.from('tecnologias').update({ ordem: b.ordem }).eq('id', a.id),
-      supabase.from('tecnologias').update({ ordem: a.ordem }).eq('id', b.id),
+      supabase.from('portfolio_tecnologias').update({ ordem: b.ordem }).eq('id', a.id),
+      supabase.from('portfolio_tecnologias').update({ ordem: a.ordem }).eq('id', b.id),
     ])
     carregar()
   }

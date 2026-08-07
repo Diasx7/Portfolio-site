@@ -17,10 +17,10 @@ export default function PaginaPublica() {
     async function carregar() {
       // Busca tudo em paralelo
       const [projetos, tecnologias, certificados, textos] = await Promise.all([
-        supabase.from('projetos').select('*').eq('visivel', true).order('ordem'),
-        supabase.from('tecnologias').select('*').order('ordem'),
-        supabase.from('certificados').select('*').order('ano', { ascending: false }),
-        supabase.from('textos_site').select('*'),
+        supabase.from('portfolio_projetos').select('*').eq('visivel', true).order('ordem'),
+        supabase.from('portfolio_tecnologias').select('*').order('ordem'),
+        supabase.from('portfolio_certificados').select('*').order('ano', { ascending: false }),
+        supabase.from('portfolio_textos_site').select('*'),
       ])
 
       // Transforma os textos em um objeto { chave: valor }

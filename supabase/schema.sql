@@ -1,10 +1,13 @@
 -- =============================================================
 -- Schema do portfólio — rodar no SQL Editor do painel do Supabase
+-- Projeto Supabase compartilhado: tudo do portfólio usa o prefixo
+-- "portfolio_" e este script só mexe nessas quatro tabelas.
+-- Pode ser rodado mais de uma vez sem quebrar.
 -- =============================================================
 
 -- ---------- Tabelas ----------
 
-create table if not exists projetos (
+create table if not exists portfolio_projetos (
   id uuid primary key default gen_random_uuid(),
   nome text not null,
   descricao text not null default '',
@@ -18,14 +21,14 @@ create table if not exists projetos (
   criado_em timestamptz not null default now()
 );
 
-create table if not exists tecnologias (
+create table if not exists portfolio_tecnologias (
   id uuid primary key default gen_random_uuid(),
   nome text not null,
   grupo text not null default 'domino' check (grupo in ('domino', 'tambem_uso')),
   ordem integer not null default 0
 );
 
-create table if not exists certificados (
+create table if not exists portfolio_certificados (
   id uuid primary key default gen_random_uuid(),
   nome text not null,
   plataforma text not null default '',
@@ -34,37 +37,94 @@ create table if not exists certificados (
 );
 
 -- Textos editáveis do site (chave/valor)
-create table if not exists textos_site (
+create table if not exists portfolio_textos_site (
   chave text primary key,
   valor text not null default ''
 );
 
--- ---------- RLS: leitura pública, escrita só autenticado ----------
+-- ---------- RLS: leitura pública, escrita só pelo dono ----------
+-- O projeto Supabase tem outros usuários; a escrita fica restrita
+-- ao usuário autenticado com o e-mail do dono do portfólio.
 
-alter table projetos enable row level security;
-alter table tecnologias enable row level security;
-alter table certificados enable row level security;
-alter table textos_site enable row level security;
+alter table portfolio_projetos enable row level security;
+alter table portfolio_tecnologias enable row level security;
+alter table portfolio_certificados enable row level security;
+alter table portfolio_textos_site enable row level security;
 
 -- Leitura liberada pra todo mundo (site público)
-create policy "leitura publica" on projetos for select using (true);
-create policy "leitura publica" on tecnologias for select using (true);
-create policy "leitura publica" on certificados for select using (true);
-create policy "leitura publica" on textos_site for select using (true);
+drop policy if exists "leitura publica" on portfolio_projetos;
+create policy "leitura publica" on portfolio_projetos for select using (true);
 
--- Escrita só pra usuário logado (o admin)
-create policy "escrita autenticada" on projetos for all
-  to authenticated using (true) with check (true);
-create policy "escrita autenticada" on tecnologias for all
-  to authenticated using (true) with check (true);
-create policy "escrita autenticada" on certificados for all
-  to authenticated using (true) with check (true);
-create policy "escrita autenticada" on textos_site for all
-  to authenticated using (true) with check (true);
+drop policy if exists "leitura publica" on portfolio_tecnologias;
+create policy "leitura publica" on portfolio_tecnologias for select using (true);
+
+drop policy if exists "leitura publica" on portfolio_certificados;
+create policy "leitura publica" on portfolio_certificados for select using (true);
+
+drop policy if exists "leitura publica" on portfolio_textos_site;
+create policy "leitura publica" on portfolio_textos_site for select using (true);
+
+-- Escrita só pro dono (confere o e-mail do JWT)
+
+-- portfolio_projetos
+drop policy if exists "escrita autenticada" on portfolio_projetos;
+drop policy if exists "escrita dono insert" on portfolio_projetos;
+create policy "escrita dono insert" on portfolio_projetos for insert
+  to authenticated with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono update" on portfolio_projetos;
+create policy "escrita dono update" on portfolio_projetos for update
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono delete" on portfolio_projetos;
+create policy "escrita dono delete" on portfolio_projetos for delete
+  to authenticated using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+
+-- portfolio_tecnologias
+drop policy if exists "escrita autenticada" on portfolio_tecnologias;
+drop policy if exists "escrita dono insert" on portfolio_tecnologias;
+create policy "escrita dono insert" on portfolio_tecnologias for insert
+  to authenticated with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono update" on portfolio_tecnologias;
+create policy "escrita dono update" on portfolio_tecnologias for update
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono delete" on portfolio_tecnologias;
+create policy "escrita dono delete" on portfolio_tecnologias for delete
+  to authenticated using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+
+-- portfolio_certificados
+drop policy if exists "escrita autenticada" on portfolio_certificados;
+drop policy if exists "escrita dono insert" on portfolio_certificados;
+create policy "escrita dono insert" on portfolio_certificados for insert
+  to authenticated with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono update" on portfolio_certificados;
+create policy "escrita dono update" on portfolio_certificados for update
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono delete" on portfolio_certificados;
+create policy "escrita dono delete" on portfolio_certificados for delete
+  to authenticated using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+
+-- portfolio_textos_site
+drop policy if exists "escrita autenticada" on portfolio_textos_site;
+drop policy if exists "escrita dono insert" on portfolio_textos_site;
+create policy "escrita dono insert" on portfolio_textos_site for insert
+  to authenticated with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono update" on portfolio_textos_site;
+create policy "escrita dono update" on portfolio_textos_site for update
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+drop policy if exists "escrita dono delete" on portfolio_textos_site;
+create policy "escrita dono delete" on portfolio_textos_site for delete
+  to authenticated using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
 
 -- ---------- Textos iniciais (edita depois no admin) ----------
 
-insert into textos_site (chave, valor) values
+insert into portfolio_textos_site (chave, valor) values
   ('hero_frases', E'aplicações web completas.\ndo banco de dados à interface.\nprodutos que resolvem problemas reais.'),
   ('hero_texto', 'Transformo ideias em aplicações web funcionais, do banco de dados à interface. Foco em soluções simples que resolvem problemas de verdade.'),
   ('sobre', 'Sou desenvolvedor fullstack e construo aplicações web de ponta a ponta com React, Node e Supabase. Gosto de pegar um problema real, entender ele a fundo e entregar uma solução simples que funciona.'),
