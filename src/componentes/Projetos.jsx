@@ -9,6 +9,11 @@ function CartaoProjeto({ projeto, principal }) {
         (emAndamento ? ' cartao-andamento' : '')
       }
     >
+      {projeto.imagens?.length > 0 && (
+        <div className="cartao-capa">
+          <img src={projeto.imagens[0]} alt="" loading="lazy" />
+        </div>
+      )}
       <div className="cartao-topo">
         <h3>{projeto.nome}</h3>
         <div className="badges">

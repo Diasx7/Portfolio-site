@@ -170,6 +170,49 @@
   font-weight: 600;
 }
 
+/* ---------- Imagens dos projetos ---------- */
+
+.admin-imagem-status {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.admin-imagens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-imagem-item {
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-imagem-item img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--borda);
+  display: block;
+}
+
+.admin-imagem-item button {
+  background: transparent;
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.admin-imagem-item button:hover {
+  border-color: #e08a8a;
+  color: #e08a8a;
+}
+
 /* ---------- Listas ---------- */
 
 .admin-lista {

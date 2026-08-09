@@ -18,8 +18,12 @@ create table if not exists portfolio_projetos (
   destaque boolean not null default false,
   visivel boolean not null default true,
   ordem integer not null default 0,
-  criado_em timestamptz not null default now()
+  criado_em timestamptz not null default now(),
+  imagens text[] not null default '{}'
 );
+
+-- Garante a coluna em bancos onde a tabela já existia sem ela
+alter table portfolio_projetos add column if not exists imagens text[] not null default '{}';
 
 create table if not exists portfolio_tecnologias (
   id uuid primary key default gen_random_uuid(),
@@ -121,6 +125,35 @@ create policy "escrita dono update" on portfolio_textos_site for update
 drop policy if exists "escrita dono delete" on portfolio_textos_site;
 create policy "escrita dono delete" on portfolio_textos_site for delete
   to authenticated using ((auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com');
+
+-- ---------- Storage: bucket de imagens dos projetos ----------
+-- O bucket é público pra leitura; só o dono pode enviar/apagar arquivo.
+-- As policies filtram por bucket_id pra não afetar outros buckets
+-- que o projeto Supabase compartilhado possa ter.
+
+insert into storage.buckets (id, name, public)
+values ('imagens-projetos', 'imagens-projetos', true)
+on conflict (id) do update set public = true;
+
+drop policy if exists "portfolio leitura publica imagens" on storage.objects;
+create policy "portfolio leitura publica imagens" on storage.objects for select
+  using (bucket_id = 'imagens-projetos');
+
+drop policy if exists "portfolio upload dono imagens" on storage.objects;
+create policy "portfolio upload dono imagens" on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'imagens-projetos'
+    and (auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com'
+  );
+
+drop policy if exists "portfolio delete dono imagens" on storage.objects;
+create policy "portfolio delete dono imagens" on storage.objects for delete
+  to authenticated
+  using (
+    bucket_id = 'imagens-projetos'
+    and (auth.jwt() ->> 'email') = 'joaopablosouzadias78@gmail.com'
+  );
 
 -- ---------- Textos iniciais (edita depois no admin) ----------
 

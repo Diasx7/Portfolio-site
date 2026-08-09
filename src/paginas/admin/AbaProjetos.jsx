@@ -10,13 +10,17 @@ const PROJETO_VAZIO = {
   status: 'concluido',
   destaque: false,
   visivel: true,
+  imagens: [],
 }
+
+const MAX_IMAGENS = 3
 
 export default function AbaProjetos() {
   const [projetos, setProjetos] = useState([])
   const [form, setForm] = useState(PROJETO_VAZIO)
   const [editandoId, setEditandoId] = useState(null)
   const [salvando, setSalvando] = useState(false)
+  const [enviandoImagem, setEnviandoImagem] = useState(false)
 
   async function carregar() {
     const { data } = await supabase.from('portfolio_projetos').select('*').order('ordem')
@@ -52,6 +56,7 @@ export default function AbaProjetos() {
       status: form.status,
       destaque: form.destaque,
       visivel: form.visivel,
+      imagens: form.imagens,
     }
 
     // Só um projeto pode ser destaque por vez
@@ -75,6 +80,41 @@ export default function AbaProjetos() {
     if (!confirm('Excluir esse projeto?')) return
     await supabase.from('portfolio_projetos').delete().eq('id', id)
     carregar()
+  }
+
+  // Sobe a imagem pro bucket e guarda a URL pública no form
+  async function enviarImagem(e) {
+    const arquivo = e.target.files?.[0]
+    e.target.value = ''
+    if (!arquivo || form.imagens.length >= MAX_IMAGENS) return
+
+    setEnviandoImagem(true)
+    const extensao = arquivo.name.split('.').pop()
+    const caminho = `${crypto.randomUUID()}.${extensao}`
+    const { error } = await supabase.storage.from('imagens-projetos').upload(caminho, arquivo)
+
+    if (!error) {
+      const { data } = supabase.storage.from('imagens-projetos').getPublicUrl(caminho)
+      const novasImagens = [...form.imagens, data.publicUrl]
+      setForm((f) => ({ ...f, imagens: novasImagens }))
+      // Projeto já existe: salva a lista de imagens na hora, sem esperar o Salvar
+      if (editandoId) {
+        await supabase.from('portfolio_projetos').update({ imagens: novasImagens }).eq('id', editandoId)
+      }
+    }
+    setEnviandoImagem(false)
+  }
+
+  // Apaga a imagem do bucket e tira ela da lista
+  async function removerImagem(url) {
+    const caminho = url.split('/imagens-projetos/')[1]
+    if (caminho) await supabase.storage.from('imagens-projetos').remove([caminho])
+
+    const novasImagens = form.imagens.filter((u) => u !== url)
+    setForm((f) => ({ ...f, imagens: novasImagens }))
+    if (editandoId) {
+      await supabase.from('portfolio_projetos').update({ imagens: novasImagens }).eq('id', editandoId)
+    }
   }
 
   async function alternar(projeto, campo) {
@@ -138,6 +178,26 @@ export default function AbaProjetos() {
             Visível no site
           </label>
         </div>
+        <label>
+          Imagens (até {MAX_IMAGENS})
+          <input
+            type="file"
+            accept="image/*"
+            onChange={enviarImagem}
+            disabled={enviandoImagem || form.imagens.length >= MAX_IMAGENS}
+          />
+        </label>
+        {enviandoImagem && <p className="admin-imagem-status">Enviando imagem…</p>}
+        {form.imagens.length > 0 && (
+          <div className="admin-imagens">
+            {form.imagens.map((url) => (
+              <div className="admin-imagem-item" key={url}>
+                <img src={url} alt="" />
+                <button type="button" onClick={() => removerImagem(url)}>Remover</button>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="admin-form-acoes">
           <button type="submit" disabled={salvando}>{salvando ? 'Salvando…' : 'Salvar'}</button>
           {editandoId && <button type="button" onClick={cancelar}>Cancelar</button>}

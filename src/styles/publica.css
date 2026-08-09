@@ -192,6 +192,19 @@
   border-color: rgba(62, 198, 224, 0.3);
 }
 
+.cartao-capa {
+  margin: -26px -26px 0;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+.cartao-capa img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
 .cartao-topo {
   display: flex;
   flex-wrap: wrap;
