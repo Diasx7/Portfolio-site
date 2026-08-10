@@ -40,16 +40,22 @@ begin
   if tipo_atual is null then
     alter table portfolio_projetos add column imagens jsonb not null default '[]'::jsonb;
   elsif tipo_atual = 'ARRAY' then
-    alter table portfolio_projetos alter column imagens drop default;
-    alter table portfolio_projetos alter column imagens type jsonb using (
-      coalesce(
-        (select jsonb_agg(jsonb_build_object('url', u, 'legenda', ''))
-         from unnest(imagens) as u),
-        '[]'::jsonb
-      )
+    -- ALTER COLUMN ... TYPE não aceita subquery na cláusula USING
+    -- ("cannot use subquery in transform expression"), então a conversão
+    -- passa por uma coluna auxiliar: cria a coluna nova em jsonb, preenche
+    -- com UPDATE (aqui sim pode usar unnest + jsonb_agg à vontade), derruba
+    -- a coluna antiga e renomeia a nova pro lugar dela.
+    alter table portfolio_projetos add column imagens_nova jsonb not null default '[]'::jsonb;
+
+    update portfolio_projetos
+    set imagens_nova = coalesce(
+      (select jsonb_agg(jsonb_build_object('url', u, 'legenda', ''))
+       from unnest(imagens) as u),
+      '[]'::jsonb
     );
-    alter table portfolio_projetos alter column imagens set default '[]'::jsonb;
-    alter table portfolio_projetos alter column imagens set not null;
+
+    alter table portfolio_projetos drop column imagens;
+    alter table portfolio_projetos rename column imagens_nova to imagens;
   end if;
 end $$;
 
