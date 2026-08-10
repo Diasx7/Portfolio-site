@@ -167,16 +167,22 @@
   z-index: 1;
 }
 
+/* Card: só a capa e o nome. O resto só aparece no modal ao clicar */
 .cartao-projeto {
   position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: var(--card);
-  border: 1px solid var(--borda);
   border-radius: 12px;
-  padding: 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  border: 1px solid var(--borda);
+  background: var(--card);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
   transition: transform 0.25s ease, border-color 0.25s ease;
 }
 
@@ -185,60 +191,68 @@
   border-color: rgba(62, 198, 224, 0.4);
 }
 
-/* Projeto em destaque ocupa a linha inteira */
-.cartao-principal {
-  grid-column: 1 / -1;
-  background: var(--card-destaque);
-  border-color: rgba(62, 198, 224, 0.3);
-}
-
-.cartao-capa {
-  margin: -26px -26px 0;
-  border-radius: 12px 12px 0 0;
-  overflow: hidden;
-  display: block;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.cartao-capa:focus-visible {
+.cartao-projeto:focus-visible {
   outline: 2px solid var(--ciano);
   outline-offset: -2px;
 }
 
-.cartao-capa img {
-  display: block;
+/* Projeto em destaque ocupa a linha inteira e fica mais baixo/largo */
+.cartao-principal {
+  grid-column: 1 / -1;
+  aspect-ratio: 21 / 9;
+  border-color: rgba(62, 198, 224, 0.3);
+}
+
+.cartao-capa-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
-  transition: transform 0.25s ease;
+  transition: transform 0.3s ease;
 }
 
-.cartao-capa:hover img {
-  transform: scale(1.03);
+.cartao-projeto:hover .cartao-capa-img {
+  transform: scale(1.04);
 }
 
-.cartao-topo {
+/* Fundo neutro quando o projeto ainda não tem imagem cadastrada */
+.capa-vazia {
+  background: linear-gradient(135deg, var(--card), var(--fundo));
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: center;
 }
 
-.cartao-topo h3 {
-  font-size: 1.3rem;
+.capa-vazia::after {
+  content: attr(data-inicial);
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: var(--ciano);
+  opacity: 0.18;
 }
 
-.cartao-principal .cartao-topo h3 {
+.cartao-capa-vazia {
+  position: absolute;
+  inset: 0;
+}
+
+.cartao-nome-faixa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 40px 20px 16px;
+  background: linear-gradient(to top, rgba(4, 8, 12, 0.9), transparent);
+}
+
+.cartao-nome-faixa h3 {
+  color: var(--titulo);
+  font-size: 1.15rem;
+}
+
+.cartao-principal .cartao-nome-faixa h3 {
   font-size: 1.6rem;
-}
-
-.badges {
-  display: flex;
-  gap: 8px;
 }
 
 .badge {
@@ -248,11 +262,6 @@
   text-transform: uppercase;
   padding: 5px 10px;
   border-radius: 999px;
-}
-
-.badge-principal {
-  background: var(--ciano);
-  color: var(--fundo);
 }
 
 /* Badge "em andamento" pulsando */
@@ -269,7 +278,7 @@
 }
 
 .cartao-descricao {
-  flex: 1;
+  color: var(--texto);
 }
 
 .cartao-tags {
@@ -299,33 +308,6 @@
 
 .cartao-links a:hover {
   text-decoration: underline;
-}
-
-/* Barrinha tipo loading correndo na base dos cards em andamento */
-.barra-loading {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: rgba(62, 198, 224, 0.1);
-}
-
-.barra-loading::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -40%;
-  width: 40%;
-  height: 100%;
-  background: var(--ciano);
-  border-radius: 2px;
-  animation: correr 2.2s ease-in-out infinite;
-}
-
-@keyframes correr {
-  0% { left: -40%; }
-  100% { left: 100%; }
 }
 
 /* ============ Tecnologias ============ */
@@ -448,9 +430,9 @@
   opacity: 0.7;
 }
 
-/* ============ Lightbox de imagens dos projetos ============ */
+/* ============ Modal de detalhes do projeto ============ */
 
-.lightbox-fundo {
+.modal-fundo {
   position: fixed;
   inset: 0;
   background: rgba(6, 10, 14, 0.88);
@@ -459,36 +441,22 @@
   justify-content: center;
   z-index: 200;
   padding: 20px;
+  overflow-y: auto;
 }
 
-.lightbox-conteudo {
+.modal-conteudo {
   position: relative;
-  max-width: min(900px, 92vw);
+  width: min(720px, 92vw);
   max-height: 90vh;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
 }
 
-.lightbox-conteudo img {
-  display: block;
-  max-width: 100%;
-  max-height: 75vh;
-  border-radius: 12px;
-  border: 1px solid var(--borda);
-  object-fit: contain;
-  background: var(--card);
-}
-
-.lightbox-legenda {
-  color: var(--titulo);
-  text-align: center;
-  font-size: 0.95rem;
-  max-width: 60ch;
-}
-
-.lightbox-fechar {
+.modal-fechar {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -507,38 +475,87 @@
   z-index: 201;
 }
 
-.lightbox-fechar:hover {
+.modal-fechar:hover {
   border-color: var(--ciano);
   color: var(--ciano);
 }
 
-.lightbox-seta {
-  position: fixed;
+.modal-imagem-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fundo);
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+.modal-imagem-area img {
+  display: block;
+  width: 100%;
+  max-height: 55vh;
+  object-fit: contain;
+}
+
+.modal-imagem-vazia {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.modal-legenda-imagem {
+  color: var(--texto);
+  opacity: 0.85;
+  text-align: center;
+  font-size: 0.9rem;
+  padding: 10px 24px 0;
+}
+
+.modal-seta {
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: var(--card);
+  background: rgba(10, 16, 24, 0.6);
   border: 1px solid var(--borda);
   color: var(--texto);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   line-height: 1;
   cursor: pointer;
-  z-index: 201;
 }
 
-.lightbox-seta:hover {
+.modal-seta:hover {
   border-color: var(--ciano);
   color: var(--ciano);
 }
 
-.lightbox-seta-esq {
-  left: 16px;
+.modal-seta-esq {
+  left: 12px;
 }
 
-.lightbox-seta-dir {
-  right: 16px;
+.modal-seta-dir {
+  right: 12px;
+}
+
+.modal-info {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-info-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.modal-info-topo h3 {
+  font-size: 1.5rem;
+  color: var(--titulo);
 }
 
 /* ============ Mobile: 1 coluna, sem luz do mouse ============ */
@@ -561,22 +578,26 @@
     min-height: 76vh;
   }
 
-  .lightbox-fechar {
+  .cartao-principal {
+    aspect-ratio: 4 / 3;
+  }
+
+  .modal-fechar {
     top: 10px;
     right: 10px;
   }
 
-  .lightbox-seta {
-    width: 36px;
-    height: 36px;
+  .modal-seta {
+    width: 34px;
+    height: 34px;
     font-size: 1.3rem;
   }
 
-  .lightbox-seta-esq {
+  .modal-seta-esq {
     left: 6px;
   }
 
-  .lightbox-seta-dir {
+  .modal-seta-dir {
     right: 6px;
   }
 }

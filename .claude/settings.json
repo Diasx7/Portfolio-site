@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vite *)",
+      "Bash(node test-modal.mjs)",
+      "Bash(rm -f test-modal.mjs test-lightbox.mjs)",
+      "Bash(netstat -ano)",
+      "Bash(awk '{print $5}')"
+    ]
+  }
+}

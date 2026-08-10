@@ -1,69 +1,48 @@
 import { useEffect, useRef, useState } from 'react'
 
-function CartaoProjeto({ projeto, principal, aoAbrirImagem }) {
-  const emAndamento = projeto.status === 'em_andamento'
+function inicialDe(nome) {
+  return nome?.trim()?.[0]?.toUpperCase() || '?'
+}
+
+// Card só com a capa e o nome; todo o resto fica escondido até clicar
+function CartaoProjeto({ projeto, principal, aoAbrir }) {
+  const capa = projeto.imagens?.[0]
 
   return (
-    <article
-      className={
-        'cartao-projeto' +
-        (principal ? ' cartao-principal' : '') +
-        (emAndamento ? ' cartao-andamento' : '')
-      }
+    <button
+      type="button"
+      className={'cartao-projeto' + (principal ? ' cartao-principal' : '')}
+      onClick={() => aoAbrir(projeto)}
+      aria-label={`Ver detalhes do projeto ${projeto.nome}`}
     >
-      {projeto.imagens?.length > 0 && (
-        <button
-          type="button"
-          className="cartao-capa"
-          onClick={() => aoAbrirImagem(projeto.imagens, 0)}
-          aria-label={`Ver imagens do projeto ${projeto.nome}`}
-        >
-          <img src={projeto.imagens[0].url} alt="" loading="lazy" />
-        </button>
+      {capa ? (
+        <img className="cartao-capa-img" src={capa.url} alt="" loading="lazy" />
+      ) : (
+        <div className="capa-vazia cartao-capa-vazia" data-inicial={inicialDe(projeto.nome)} aria-hidden="true" />
       )}
-      <div className="cartao-topo">
+      <div className="cartao-nome-faixa">
         <h3>{projeto.nome}</h3>
-        <div className="badges">
-          {principal && <span className="badge badge-principal">Projeto principal</span>}
-          {emAndamento && <span className="badge badge-andamento">Em andamento</span>}
-        </div>
       </div>
-      <p className="cartao-descricao">{projeto.descricao}</p>
-      <ul className="cartao-tags">
-        {(projeto.tags || []).map((tag) => (
-          <li key={tag}>{tag}</li>
-        ))}
-      </ul>
-      <div className="cartao-links">
-        {projeto.link_demo && (
-          <a href={projeto.link_demo} target="_blank" rel="noreferrer">
-            Ver ao vivo →
-          </a>
-        )}
-        {projeto.link_codigo && (
-          <a href={projeto.link_codigo} target="_blank" rel="noreferrer">
-            Código
-          </a>
-        )}
-      </div>
-      {/* Barrinha tipo loading na base dos cards em andamento */}
-      {emAndamento && <div className="barra-loading" aria-hidden="true" />}
-    </article>
+    </button>
   )
 }
 
-// Modal com a imagem grande, legenda e navegação entre as imagens do projeto
-function Lightbox({ imagens, indiceInicial, aoFechar }) {
-  const [indice, setIndice] = useState(indiceInicial)
+// Modal com todas as informações do projeto: imagens navegáveis, descrição, tags, status e links
+function ModalProjeto({ projeto, aoFechar }) {
+  const [indice, setIndice] = useState(0)
+  const imagens = projeto.imagens || []
   const total = imagens.length
-  const imagem = imagens[indice]
+  const imagemAtual = imagens[indice]
+  const emAndamento = projeto.status === 'em_andamento'
   const toqueX = useRef(null)
 
   function anterior() {
+    if (total < 2) return
     setIndice((i) => (i - 1 + total) % total)
   }
 
   function proxima() {
+    if (total < 2) return
     setIndice((i) => (i + 1) % total)
   }
 
@@ -90,7 +69,7 @@ function Lightbox({ imagens, indiceInicial, aoFechar }) {
     toqueX.current = e.touches[0].clientX
   }
 
-  // Swipe simples: arrasta mais de 40px pro lado troca de imagem
+  // Swipe simples na área da imagem: arrasta mais de 40px pro lado troca de imagem
   function aoTocarFim(e) {
     if (toqueX.current === null) return
     const delta = e.changedTouches[0].clientX - toqueX.current
@@ -102,73 +81,92 @@ function Lightbox({ imagens, indiceInicial, aoFechar }) {
   }
 
   return (
-    <div className="lightbox-fundo" onClick={aoFechar}>
-      <button className="lightbox-fechar" onClick={aoFechar} aria-label="Fechar">
-        ✕
-      </button>
-      {total > 1 && (
-        <button
-          className="lightbox-seta lightbox-seta-esq"
-          onClick={(e) => {
-            e.stopPropagation()
-            anterior()
-          }}
-          aria-label="Imagem anterior"
-        >
-          ‹
+    <div className="modal-fundo" onClick={aoFechar}>
+      <div className="modal-conteudo" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-fechar" onClick={aoFechar} aria-label="Fechar">
+          ✕
         </button>
-      )}
-      <div
-        className="lightbox-conteudo"
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={aoTocarInicio}
-        onTouchEnd={aoTocarFim}
-      >
-        <img src={imagem.url} alt={imagem.legenda || ''} />
-        {imagem.legenda && <p className="lightbox-legenda">{imagem.legenda}</p>}
+
+        <div className="modal-imagem-area" onTouchStart={aoTocarInicio} onTouchEnd={aoTocarFim}>
+          {imagemAtual ? (
+            <img src={imagemAtual.url} alt={imagemAtual.legenda || ''} />
+          ) : (
+            <div className="capa-vazia modal-imagem-vazia" data-inicial={inicialDe(projeto.nome)} aria-hidden="true" />
+          )}
+          {total > 1 && (
+            <>
+              <button
+                className="modal-seta modal-seta-esq"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  anterior()
+                }}
+                aria-label="Imagem anterior"
+              >
+                ‹
+              </button>
+              <button
+                className="modal-seta modal-seta-dir"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  proxima()
+                }}
+                aria-label="Próxima imagem"
+              >
+                ›
+              </button>
+            </>
+          )}
+        </div>
+        {imagemAtual?.legenda && <p className="modal-legenda-imagem">{imagemAtual.legenda}</p>}
+
+        <div className="modal-info">
+          <div className="modal-info-topo">
+            <h3>{projeto.nome}</h3>
+            {emAndamento && <span className="badge badge-andamento">Em andamento</span>}
+          </div>
+          <p className="cartao-descricao">{projeto.descricao}</p>
+          {projeto.tags?.length > 0 && (
+            <ul className="cartao-tags">
+              {projeto.tags.map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
+          )}
+          <div className="cartao-links">
+            {projeto.link_demo && (
+              <a href={projeto.link_demo} target="_blank" rel="noreferrer">
+                Ver ao vivo →
+              </a>
+            )}
+            {projeto.link_codigo && (
+              <a href={projeto.link_codigo} target="_blank" rel="noreferrer">
+                Código
+              </a>
+            )}
+          </div>
+        </div>
       </div>
-      {total > 1 && (
-        <button
-          className="lightbox-seta lightbox-seta-dir"
-          onClick={(e) => {
-            e.stopPropagation()
-            proxima()
-          }}
-          aria-label="Próxima imagem"
-        >
-          ›
-        </button>
-      )}
     </div>
   )
 }
 
 export default function Projetos({ projetos }) {
-  const [lightbox, setLightbox] = useState(null)
+  const [projetoAberto, setProjetoAberto] = useState(null)
   const principal = projetos.find((p) => p.destaque)
   const demais = projetos.filter((p) => !p.destaque)
-
-  function abrirImagem(imagens, indice) {
-    setLightbox({ imagens, indice })
-  }
 
   return (
     <section className="secao revelar" id="projetos">
       <h2 className="secao-titulo">Projetos</h2>
       <div className="grade-projetos">
-        {principal && <CartaoProjeto projeto={principal} principal aoAbrirImagem={abrirImagem} />}
+        {principal && <CartaoProjeto projeto={principal} principal aoAbrir={setProjetoAberto} />}
         {demais.map((p) => (
-          <CartaoProjeto key={p.id} projeto={p} aoAbrirImagem={abrirImagem} />
+          <CartaoProjeto key={p.id} projeto={p} aoAbrir={setProjetoAberto} />
         ))}
       </div>
       {projetos.length === 0 && <p className="vazio">Projetos em breve.</p>}
-      {lightbox && (
-        <Lightbox
-          imagens={lightbox.imagens}
-          indiceInicial={lightbox.indice}
-          aoFechar={() => setLightbox(null)}
-        />
-      )}
+      {projetoAberto && <ModalProjeto projeto={projetoAberto} aoFechar={() => setProjetoAberto(null)} />}
     </section>
   )
 }
