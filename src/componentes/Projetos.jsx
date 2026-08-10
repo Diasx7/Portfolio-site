@@ -4,9 +4,15 @@ function inicialDe(nome) {
   return nome?.trim()?.[0]?.toUpperCase() || '?'
 }
 
+// Aceita tanto o formato novo {url, legenda} quanto uma URL direto em texto
+// (dado antigo, de antes da migração pra jsonb)
+function imagemDe(item) {
+  return typeof item === 'string' ? { url: item, legenda: '' } : item
+}
+
 // Card só com a capa e o nome; todo o resto fica escondido até clicar
 function CartaoProjeto({ projeto, principal, aoAbrir }) {
-  const capa = projeto.imagens?.[0]
+  const capa = imagemDe(projeto.imagens?.[0])
 
   return (
     <button
@@ -30,7 +36,7 @@ function CartaoProjeto({ projeto, principal, aoAbrir }) {
 // Modal com todas as informações do projeto: imagens navegáveis, descrição, tags, status e links
 function ModalProjeto({ projeto, aoFechar }) {
   const [indice, setIndice] = useState(0)
-  const imagens = projeto.imagens || []
+  const imagens = (projeto.imagens || []).map(imagemDe)
   const total = imagens.length
   const imagemAtual = imagens[indice]
   const emAndamento = projeto.status === 'em_andamento'

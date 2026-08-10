@@ -15,6 +15,12 @@ const PROJETO_VAZIO = {
 
 const MAX_IMAGENS = 3
 
+// Aceita tanto o formato novo {url, legenda} quanto uma URL direto em texto
+// (dado antigo, de antes da migração pra jsonb)
+function imagemDe(item) {
+  return typeof item === 'string' ? { url: item, legenda: '' } : item
+}
+
 export default function AbaProjetos() {
   const [projetos, setProjetos] = useState([])
   const [form, setForm] = useState(PROJETO_VAZIO)
@@ -33,7 +39,11 @@ export default function AbaProjetos() {
 
   function editar(projeto) {
     setEditandoId(projeto.id)
-    setForm({ ...projeto, tags: (projeto.tags || []).join(', ') })
+    setForm({
+      ...projeto,
+      tags: (projeto.tags || []).join(', '),
+      imagens: (projeto.imagens || []).map(imagemDe),
+    })
     window.scrollTo({ top: 0 })
   }
 
