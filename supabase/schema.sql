@@ -53,6 +53,51 @@ begin
   end if;
 end $$;
 
+-- Corrige linhas onde algum item do array "imagens" ficou salvo como uma
+-- STRING contendo o objeto serializado (ex.: "{\"url\":\"...\",\"legenda\":\"\"}")
+-- em vez do objeto jsonb {"url": "...", "legenda": "..."} direto.
+-- Função auxiliar temporária: recebe um item do array e devolve o objeto certo.
+--   - se já é objeto, devolve como está;
+--   - se é string com um objeto serializado dentro, faz o parse de volta;
+--   - se é string mas não é um JSON válido (ex.: uma URL solta, formato bem
+--     antigo de antes da migração pra jsonb), embrulha como {"url": ..., "legenda": ""}
+--     em vez de deixar quebrar a migração inteira.
+create or replace function portfolio_normalizar_item_imagem(item jsonb)
+returns jsonb
+language plpgsql
+as $func$
+begin
+  if jsonb_typeof(item) = 'object' then
+    return item;
+  elsif jsonb_typeof(item) = 'string' then
+    begin
+      return (item #>> '{}')::jsonb;
+    exception when others then
+      return jsonb_build_object('url', item #>> '{}', 'legenda', '');
+    end;
+  else
+    return item;
+  end if;
+end;
+$func$;
+
+update portfolio_projetos
+set imagens = coalesce(
+  (
+    select jsonb_agg(portfolio_normalizar_item_imagem(item))
+    from jsonb_array_elements(imagens) as item
+  ),
+  '[]'::jsonb
+)
+where jsonb_typeof(imagens) = 'array'
+  and exists (
+    select 1
+    from jsonb_array_elements(imagens) as item
+    where jsonb_typeof(item) = 'string'
+  );
+
+drop function portfolio_normalizar_item_imagem(jsonb);
+
 create table if not exists portfolio_tecnologias (
   id uuid primary key default gen_random_uuid(),
   nome text not null,
