@@ -196,6 +196,16 @@
   margin: -26px -26px 0;
   border-radius: 12px 12px 0 0;
   overflow: hidden;
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.cartao-capa:focus-visible {
+  outline: 2px solid var(--ciano);
+  outline-offset: -2px;
 }
 
 .cartao-capa img {
@@ -203,6 +213,11 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.cartao-capa:hover img {
+  transform: scale(1.03);
 }
 
 .cartao-topo {
@@ -433,6 +448,99 @@
   opacity: 0.7;
 }
 
+/* ============ Lightbox de imagens dos projetos ============ */
+
+.lightbox-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 14, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.lightbox-conteudo {
+  position: relative;
+  max-width: min(900px, 92vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.lightbox-conteudo img {
+  display: block;
+  max-width: 100%;
+  max-height: 75vh;
+  border-radius: 12px;
+  border: 1px solid var(--borda);
+  object-fit: contain;
+  background: var(--card);
+}
+
+.lightbox-legenda {
+  color: var(--titulo);
+  text-align: center;
+  font-size: 0.95rem;
+  max-width: 60ch;
+}
+
+.lightbox-fechar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 201;
+}
+
+.lightbox-fechar:hover {
+  border-color: var(--ciano);
+  color: var(--ciano);
+}
+
+.lightbox-seta {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 201;
+}
+
+.lightbox-seta:hover {
+  border-color: var(--ciano);
+  color: var(--ciano);
+}
+
+.lightbox-seta-esq {
+  left: 16px;
+}
+
+.lightbox-seta-dir {
+  right: 16px;
+}
+
 /* ============ Mobile: 1 coluna, sem luz do mouse ============ */
 
 @media (max-width: 760px) {
@@ -451,6 +559,25 @@
 
   .hero {
     min-height: 76vh;
+  }
+
+  .lightbox-fechar {
+    top: 10px;
+    right: 10px;
+  }
+
+  .lightbox-seta {
+    width: 36px;
+    height: 36px;
+    font-size: 1.3rem;
+  }
+
+  .lightbox-seta-esq {
+    left: 6px;
+  }
+
+  .lightbox-seta-dir {
+    right: 6px;
   }
 }
 

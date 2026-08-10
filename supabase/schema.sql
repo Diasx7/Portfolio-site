@@ -19,11 +19,39 @@ create table if not exists portfolio_projetos (
   visivel boolean not null default true,
   ordem integer not null default 0,
   criado_em timestamptz not null default now(),
-  imagens text[] not null default '{}'
+  -- Array jsonb de objetos {"url": "...", "legenda": "..."}
+  imagens jsonb not null default '[]'::jsonb
 );
 
--- Garante a coluna em bancos onde a tabela já existia sem ela
-alter table portfolio_projetos add column if not exists imagens text[] not null default '{}';
+-- Migração segura da coluna "imagens":
+-- - banco novo: create table acima já cria em jsonb, nada a fazer aqui;
+-- - banco que só tem o portfolio_projetos antigo (sem a coluna): cria em jsonb;
+-- - banco que já rodou uma versão anterior deste script (coluna text[] com
+--   só as URLs): converte pra jsonb, preservando a URL e legenda vazia;
+-- - banco que já está em jsonb (rodando o script de novo): não faz nada.
+do $$
+declare
+  tipo_atual text;
+begin
+  select data_type into tipo_atual
+  from information_schema.columns
+  where table_name = 'portfolio_projetos' and column_name = 'imagens';
+
+  if tipo_atual is null then
+    alter table portfolio_projetos add column imagens jsonb not null default '[]'::jsonb;
+  elsif tipo_atual = 'ARRAY' then
+    alter table portfolio_projetos alter column imagens drop default;
+    alter table portfolio_projetos alter column imagens type jsonb using (
+      coalesce(
+        (select jsonb_agg(jsonb_build_object('url', u, 'legenda', ''))
+         from unnest(imagens) as u),
+        '[]'::jsonb
+      )
+    );
+    alter table portfolio_projetos alter column imagens set default '[]'::jsonb;
+    alter table portfolio_projetos alter column imagens set not null;
+  end if;
+end $$;
 
 create table if not exists portfolio_tecnologias (
   id uuid primary key default gen_random_uuid(),

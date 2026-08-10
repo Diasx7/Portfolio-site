@@ -95,7 +95,7 @@ export default function AbaProjetos() {
 
     if (!error) {
       const { data } = supabase.storage.from('imagens-projetos').getPublicUrl(caminho)
-      const novasImagens = [...form.imagens, data.publicUrl]
+      const novasImagens = [...form.imagens, { url: data.publicUrl, legenda: '' }]
       setForm((f) => ({ ...f, imagens: novasImagens }))
       // Projeto já existe: salva a lista de imagens na hora, sem esperar o Salvar
       if (editandoId) {
@@ -106,15 +106,23 @@ export default function AbaProjetos() {
   }
 
   // Apaga a imagem do bucket e tira ela da lista
-  async function removerImagem(url) {
-    const caminho = url.split('/imagens-projetos/')[1]
+  async function removerImagem(indice) {
+    const caminho = form.imagens[indice].url.split('/imagens-projetos/')[1]
     if (caminho) await supabase.storage.from('imagens-projetos').remove([caminho])
 
-    const novasImagens = form.imagens.filter((u) => u !== url)
+    const novasImagens = form.imagens.filter((_, i) => i !== indice)
     setForm((f) => ({ ...f, imagens: novasImagens }))
     if (editandoId) {
       await supabase.from('portfolio_projetos').update({ imagens: novasImagens }).eq('id', editandoId)
     }
+  }
+
+  // Legenda só é salva quando o form é enviado (igual aos outros campos de texto)
+  function atualizarLegenda(indice, legenda) {
+    setForm((f) => ({
+      ...f,
+      imagens: f.imagens.map((img, i) => (i === indice ? { ...img, legenda } : img)),
+    }))
   }
 
   async function alternar(projeto, campo) {
@@ -190,10 +198,16 @@ export default function AbaProjetos() {
         {enviandoImagem && <p className="admin-imagem-status">Enviando imagem…</p>}
         {form.imagens.length > 0 && (
           <div className="admin-imagens">
-            {form.imagens.map((url) => (
-              <div className="admin-imagem-item" key={url}>
-                <img src={url} alt="" />
-                <button type="button" onClick={() => removerImagem(url)}>Remover</button>
+            {form.imagens.map((img, i) => (
+              <div className="admin-imagem-item" key={img.url}>
+                <img src={img.url} alt="" />
+                <input
+                  type="text"
+                  value={img.legenda}
+                  onChange={(e) => atualizarLegenda(i, e.target.value)}
+                  placeholder="Legenda da imagem"
+                />
+                <button type="button" onClick={() => removerImagem(i)}>Remover</button>
               </div>
             ))}
           </div>

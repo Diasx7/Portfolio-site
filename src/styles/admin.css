@@ -199,6 +199,12 @@
   display: block;
 }
 
+.admin-imagem-item input[type='text'] {
+  width: 96px;
+  font-size: 0.75rem;
+  padding: 5px 6px;
+}
+
 .admin-imagem-item button {
   background: transparent;
   border: 1px solid var(--borda);
