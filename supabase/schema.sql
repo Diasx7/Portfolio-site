@@ -116,8 +116,15 @@ create table if not exists portfolio_certificados (
   nome text not null,
   plataforma text not null default '',
   ano integer,
-  link text
+  link text,
+  -- URL pública da imagem no bucket "imagens-projetos" (opcional)
+  imagem text
 );
+
+-- Garante a coluna em bancos onde a tabela já existia sem ela. É só um
+-- "add column" simples (sem mudança de tipo em cima de dado existente),
+-- então não precisa do tratamento em duas etapas que "imagens" precisou.
+alter table portfolio_certificados add column if not exists imagem text;
 
 -- Textos editáveis do site (chave/valor)
 create table if not exists portfolio_textos_site (

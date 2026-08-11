@@ -161,56 +161,64 @@
 
 .grade-projetos {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 420px));
+  justify-content: center;
+  gap: 24px;
   position: relative;
   z-index: 1;
 }
 
 /* Card: só a capa e o nome. O resto só aparece no modal ao clicar.
-   Altura fixa (não aspect-ratio) pra todo card ficar do mesmo tamanho
-   não importa a proporção da imagem enviada. */
+   Área de imagem em 16:9 (a mesma proporção do card, já que a imagem
+   ocupa o card inteiro) — todo card do mesmo tamanho relativo à sua
+   largura, não importa a proporção da imagem enviada. */
 .cartao-projeto {
   position: relative;
   display: block;
   width: 100%;
-  height: 200px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 20px;
   border: 1px solid var(--borda);
-  background: var(--card);
+  background: var(--card-imagem);
   padding: 0;
   margin: 0;
   cursor: pointer;
   text-align: left;
   font: inherit;
   color: inherit;
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .cartao-projeto:hover {
-  transform: translateY(-4px);
-  border-color: rgba(62, 198, 224, 0.4);
+  transform: translateY(-6px);
+  border-color: rgba(62, 198, 224, 0.55);
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(62, 198, 224, 0.25),
+    0 0 28px rgba(62, 198, 224, 0.2);
 }
 
 .cartao-projeto:focus-visible {
   outline: 2px solid var(--ciano);
-  outline-offset: -2px;
+  outline-offset: -3px;
 }
 
-/* Projeto em destaque ocupa 2 colunas, mas com a mesma altura fixa e recorte */
+/* Projeto em destaque ocupa as 2 colunas, mas segue a mesma proporção e recorte */
 .cartao-principal {
   grid-column: span 2;
   border-color: rgba(62, 198, 224, 0.3);
 }
 
+/* Imagem inteira, sem cortar — o fundo (levemente mais claro que o
+   card) preenche o que sobrar quando a proporção da foto for diferente */
 .cartao-capa-img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 
@@ -369,17 +377,49 @@
 .cartao-certificado {
   background: var(--card);
   border: 1px solid var(--borda);
-  border-radius: 12px;
-  padding: 22px;
+  border-radius: 16px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .cartao-certificado:hover {
   transform: translateY(-4px);
   border-color: rgba(62, 198, 224, 0.4);
+}
+
+/* Imagem do certificado inteira, sem cortar (tem texto legível) */
+.certificado-capa {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--card-imagem);
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.certificado-capa img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.certificado-capa:hover img {
+  transform: scale(1.05);
+}
+
+.cartao-certificado-corpo {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
 }
 
 .cartao-certificado h3 {
@@ -578,10 +618,6 @@
 
   .hero {
     min-height: 55vh;
-  }
-
-  .cartao-projeto {
-    height: 160px;
   }
 
   .cartao-principal {
