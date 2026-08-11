@@ -11,7 +11,9 @@ function imagemDe(item) {
   return typeof item === 'string' ? { url: item, legenda: '' } : item
 }
 
-// Card só com a capa e o nome; todo o resto fica escondido até clicar
+// Card em formato de "janela de navegador": barrinha com as 3 bolinhas,
+// a capa embaixo, e o nome do projeto como texto normal (sem sobrepor a
+// imagem). Todo o resto fica escondido até clicar.
 function CartaoProjeto({ projeto, principal, aoAbrir }) {
   const capa = imagemDe(projeto.imagens?.[0])
 
@@ -22,14 +24,21 @@ function CartaoProjeto({ projeto, principal, aoAbrir }) {
       onClick={() => aoAbrir(projeto)}
       aria-label={`Ver detalhes do projeto ${projeto.nome}`}
     >
-      {capa ? (
-        <img className="cartao-capa-img" src={capa.url} alt="" loading="lazy" />
-      ) : (
-        <div className="capa-vazia cartao-capa-vazia" data-inicial={inicialDe(projeto.nome)} aria-hidden="true" />
-      )}
-      <div className="cartao-nome-faixa">
-        <h3>{projeto.nome}</h3>
+      <div className="janela-navegador">
+        <div className="janela-barra" aria-hidden="true">
+          <span className="janela-bolinha janela-bolinha-vermelha" />
+          <span className="janela-bolinha janela-bolinha-amarela" />
+          <span className="janela-bolinha janela-bolinha-verde" />
+        </div>
+        <div className="janela-imagem">
+          {capa ? (
+            <img className="cartao-capa-img" src={capa.url} alt="" loading="lazy" />
+          ) : (
+            <div className="capa-vazia cartao-capa-vazia" data-inicial={inicialDe(projeto.nome)} aria-hidden="true" />
+          )}
+        </div>
       </div>
+      <h3 className="cartao-nome">{projeto.nome}</h3>
     </button>
   )
 }
