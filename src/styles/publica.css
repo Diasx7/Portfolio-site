@@ -161,18 +161,20 @@
 
 .grade-projetos {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
   position: relative;
   z-index: 1;
 }
 
-/* Card: só a capa e o nome. O resto só aparece no modal ao clicar */
+/* Card: só a capa e o nome. O resto só aparece no modal ao clicar.
+   Altura fixa (não aspect-ratio) pra todo card ficar do mesmo tamanho
+   não importa a proporção da imagem enviada. */
 .cartao-projeto {
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 200px;
   overflow: hidden;
   border-radius: 12px;
   border: 1px solid var(--borda);
@@ -196,10 +198,9 @@
   outline-offset: -2px;
 }
 
-/* Projeto em destaque ocupa a linha inteira e fica mais baixo/largo */
+/* Projeto em destaque ocupa 2 colunas, mas com a mesma altura fixa e recorte */
 .cartao-principal {
-  grid-column: 1 / -1;
-  aspect-ratio: 21 / 9;
+  grid-column: span 2;
   border-color: rgba(62, 198, 224, 0.3);
 }
 
@@ -209,11 +210,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top;
   transition: transform 0.3s ease;
 }
 
 .cartao-projeto:hover .cartao-capa-img {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 /* Fundo neutro quando o projeto ainda não tem imagem cadastrada */
@@ -578,8 +580,12 @@
     min-height: 55vh;
   }
 
+  .cartao-projeto {
+    height: 160px;
+  }
+
   .cartao-principal {
-    aspect-ratio: 4 / 3;
+    grid-column: span 1;
   }
 
   .modal-fechar {
@@ -603,6 +609,7 @@
 }
 
 @media (max-width: 1000px) and (min-width: 761px) {
+  .grade-projetos,
   .grade-certificados {
     grid-template-columns: repeat(2, 1fr);
   }
