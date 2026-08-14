@@ -249,5 +249,6 @@ insert into portfolio_textos_site (chave, valor) values
   ('sobre', 'Sou desenvolvedor fullstack e construo aplicações web de ponta a ponta com React, Node e Supabase. Gosto de pegar um problema real, entender ele a fundo e entregar uma solução simples que funciona.'),
   ('contato_email', 'joaopablosouzadias78@gmail.com'),
   ('contato_github', 'https://github.com/Diasx7'),
-  ('contato_linkedin', 'https://www.linkedin.com/in/')
+  ('contato_linkedin', 'https://www.linkedin.com/in/'),
+  ('disponibilidade', 'Estágio')
 on conflict (chave) do nothing;

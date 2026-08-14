@@ -1,4 +1,5 @@
-/* Variáveis do tema escuro */
+/* Variáveis do tema escuro — usadas pelo admin (a página pública redefine
+   as suas por baixo de .pagina, ver bloco abaixo) */
 :root {
   --fundo: #050d16;
   --card: #0a1a2c;
@@ -9,6 +10,26 @@
   --borda: rgba(62, 198, 224, 0.14);
   --fonte-titulo: 'Space Grotesk', sans-serif;
   --fonte-texto: 'Inter', sans-serif;
+}
+
+/* Paleta exclusiva da página pública. Reaproveita os MESMOS nomes de
+   variável (--fundo, --card, --titulo, --ciano, --borda...) mas com
+   valores novos — como isso é escopado em .pagina (a raiz da página
+   pública), o admin continua usando os valores do :root acima, intactos. */
+.pagina {
+  --fundo: #0a0a0b;
+  --card: #111113;
+  --card-imagem: #16161a;
+  --titulo: #fafafa;
+  --texto: #a1a1aa;
+  --ciano: #3b82f6;
+  --azul-solido: #2563eb;
+  --borda: rgba(255, 255, 255, 0.08);
+  --fonte-titulo: 'Big Shoulders Display', sans-serif;
+  --fonte-mono: 'JetBrains Mono', monospace;
+
+  background: var(--fundo);
+  color: var(--texto);
 }
 
 * {

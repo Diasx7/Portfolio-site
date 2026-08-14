@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
 import useRevelarAoRolar from '../hooks/useRevelarAoRolar.js'
 import LuzMouse from '../componentes/LuzMouse.jsx'
+import Nav from '../componentes/Nav.jsx'
 import Hero from '../componentes/Hero.jsx'
-import Projetos from '../componentes/Projetos.jsx'
-import Tecnologias from '../componentes/Tecnologias.jsx'
-import Certificados from '../componentes/Certificados.jsx'
 import Sobre from '../componentes/Sobre.jsx'
+import Projetos from '../componentes/Projetos.jsx'
+import Certificados from '../componentes/Certificados.jsx'
+import Tecnologias from '../componentes/Tecnologias.jsx'
 import Contato from '../componentes/Contato.jsx'
 import '../styles/publica.css'
 
@@ -45,17 +46,17 @@ export default function PaginaPublica() {
   }
 
   const { projetos, tecnologias, certificados, textos } = dados
-  const projetoPrincipal = projetos.find((p) => p.destaque)
 
   return (
     <div className="pagina">
+      <Nav />
       <LuzMouse />
       <main>
-        <Hero textos={textos} projetoPrincipal={projetoPrincipal} />
+        <Hero textos={textos} projetos={projetos} certificados={certificados} tecnologias={tecnologias} />
+        <Sobre texto={textos.sobre} statusTexto={textos.disponibilidade} />
         <Projetos projetos={projetos} />
-        <Tecnologias tecnologias={tecnologias} />
         <Certificados certificados={certificados} />
-        <Sobre texto={textos.sobre} />
+        <Tecnologias tecnologias={tecnologias} />
         <Contato textos={textos} />
       </main>
       <footer className="rodape">

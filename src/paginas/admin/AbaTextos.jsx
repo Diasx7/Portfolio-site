@@ -9,6 +9,7 @@ const CAMPOS = [
   { chave: 'contato_email', rotulo: 'E-mail de contato', tipo: 'input' },
   { chave: 'contato_github', rotulo: 'Link do GitHub', tipo: 'input' },
   { chave: 'contato_linkedin', rotulo: 'Link do LinkedIn', tipo: 'input' },
+  { chave: 'disponibilidade', rotulo: 'Status de disponibilidade (aparece no hero e nas estatísticas)', tipo: 'input' },
 ]
 
 export default function AbaTextos() {
