@@ -5,7 +5,7 @@ export default function Hero({ textos, projetos, certificados, tecnologias }) {
     <section className="hero" id="inicio">
       <span className="hero-selo">
         <span className="hero-selo-bolinha" aria-hidden="true" />
-        Disponível para estágio
+        Disponível
       </span>
 
       <h1 className="hero-nome">
