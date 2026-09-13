@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { MOSTRAR_CERTIFICADOS } from '../config.js'
 import useRevelarAoRolar from '../hooks/useRevelarAoRolar.js'
 import LuzMouse from '../componentes/LuzMouse.jsx'
 import Nav from '../componentes/Nav.jsx'
@@ -55,7 +56,7 @@ export default function PaginaPublica() {
         <Hero textos={textos} projetos={projetos} certificados={certificados} tecnologias={tecnologias} />
         <Sobre texto={textos.sobre} statusTexto={textos.disponibilidade} />
         <Projetos projetos={projetos} />
-        <Certificados certificados={certificados} />
+        {MOSTRAR_CERTIFICADOS && <Certificados certificados={certificados} />}
         <Tecnologias tecnologias={tecnologias} />
         <Contato textos={textos} />
       </main>
