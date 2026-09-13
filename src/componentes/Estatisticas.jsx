@@ -1,4 +1,5 @@
 import NumeroAnimado from './NumeroAnimado.jsx'
+import { MOSTRAR_CERTIFICADOS } from '../config.js'
 
 function rotuloContagem(n, singular, plural) {
   return n === 1 ? singular : plural
@@ -17,7 +18,7 @@ export default function Estatisticas({ totalProjetos, totalCertificados, totalTe
       rotulo: rotuloContagem(totalProjetos, 'Projeto', 'Projetos'),
     })
   }
-  if (totalCertificados >= 3) {
+  if (MOSTRAR_CERTIFICADOS && totalCertificados >= 3) {
     celulas.push({
       chave: 'certificados',
       numero: totalCertificados,
